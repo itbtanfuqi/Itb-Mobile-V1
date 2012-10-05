@@ -1,0 +1,92 @@
+.x-img.actorPhoto{/* for dataview*/
+	margin:2px;border-radius:5px;border:3px solid #abc;height:64px;width:64px;
+	background-size: 100% 100%;
+}
+.actorPhoto img{/*for list*/
+	float:left;border-radius:5px;border:3px solid #abc;height:64px;width:64px;
+}
+.chatterMain{/*for list*/
+	margin-left:66px;
+}
+.itb_logo{
+	height:40px;
+	width:100px;
+	background-size: 100% 100%;
+}
+.chatter-list-item{
+		border-top:1px solid #DEDEDE;
+		/*
+        background-image: -webkit-linear-gradient(#cef,#ffa);
+        background-image: -moz-linear-gradient(#cef,#ffa);
+		background-image: -ms-linear-gradient(#cef,#ffa);
+		background-image: -o-linear-gradient(#cef,#ffa);
+		background-image: linear-gradient(#cef,#ffa);
+		*/
+        
+        background-image: -moz-linear-gradient(#fff,#f1f1f1);
+		background-image: -ms-linear-gradient(#fff,#f1f1f1);
+		background-image: -o-linear-gradient(#fff,#f1f1f1);
+		background-image: linear-gradient(#fff,#f1f1f1);
+		
+}
+.actorInfo,.like{
+	color: #015ba7;
+}
+.post_body,.bodyText{
+	word-wrap:break-word;
+}
+a.cmt_bar{
+	width: 90%;
+	display:block;
+	font-size: 0.8em;
+	text-decoration:none;	
+	text-align: center;
+	background-color: #CCC;
+	background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #ffffff), color-stop(2%, #dedede), color-stop(100%, #bababa));
+	background-image: -webkit-linear-gradient(#ffffff,#dedede 2%,#bababa);
+	background-image: linear-gradient(#ffffff,#dedede 2%,#bababa);
+	margin:0 auto;
+	border: 1px solid #999;
+	border-top-color: #A6A6A6;
+	color: black;
+	-webkit-background-clip: padding;
+	background-clip: padding-box;
+	-webkit-border-radius: 0.4em;
+	border-radius: 0.4em;
+	-webkit-box-align: center;
+	min-height: 1.8em;
+	padding: .3em .6em;
+	position: relative;
+	overflow: hidden;
+	-webkit-user-select: none;
+}
+.cmtPhoto{
+	float:left;height:30px;margin-right:5px;border-radius:5px;border:3px solid #abc;
+}
+.cmtBody{
+	margin-left:35px;
+}
+.chatterMain{
+	min-height: 65px;
+	width: 100%;
+	position: relative;
+}
+.chatter_textarea{
+	border:3px solid #abc;
+	border-radius:5px;
+}
+.commentLink{
+	margin-right:5px;
+	color:blue;
+	text-decoration:underline;
+}
+.chatterTime,div.chatterMain div.cmt_bar{
+	color:#ccc;font-size: 0.8em;
+}
+.x-form.x-floating{ /* here to set the comment pop up window "border"*/
+	/*background-color:#1572b2;*/
+	background-color:#c6c7c6;
+}
+.refresh_Btn{
+	margin:0 auto;
+}
