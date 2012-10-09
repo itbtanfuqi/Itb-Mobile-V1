@@ -2,7 +2,8 @@ Ext.define('ItbApp.view.chatter.Chatter', {
 	 extend: 'Ext.Panel',
      requires:["ItbApp.view.chatter.ChatterListCard",
      	"ItbApp.view.chatter.ChatterFormCard",
-     	"ItbApp.view.chatter.ChatterItemCard"
+     	"ItbApp.view.chatter.ChatterItemCard",
+     	'ItbApp.view.chatter.ChatterCommentFormCard'
      	],
 	 xtype:'chatter',	 
      config:{    	
@@ -13,7 +14,8 @@ Ext.define('ItbApp.view.chatter.Chatter', {
     	items:[
     		{xtype:'chatterlistcard'},
     		{xtype:'chatterformcard'},
-    		{xtype:'chatteritemcard'}
+    		{xtype:'chatteritemcard'},
+    		{xtype:'chattercommentformcard'}
     	]              
     }
     

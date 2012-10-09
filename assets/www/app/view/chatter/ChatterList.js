@@ -2,7 +2,7 @@ Ext.define("ItbApp.view.chatter.ChatterList", {
     //extend: "Ext.DataView",
     extend: "Ext.List",
     alias: "widget.chatterlist",
-    requires: ["ItbApp.store.Chatter"
+    requires: ["ItbApp.store.Chatter",'ItbApp.model.ChatterComments'
                //"ItbApp.view.chatter.ChatterListItem","ItbApp.view.chatter.ChatterCommentList"
            ],
     config: {  
@@ -10,13 +10,53 @@ Ext.define("ItbApp.view.chatter.ChatterList", {
     	//useComponents: true,
         //defaultType: 'chatterlistitem',
         scrollable: 'vertical',
-        //padding:'5 10 10 10',
+        pressedCls: 'white',
+        selectedCls: 'white',
         listeners:{
         	itemtap:function(list, index, item, record){
         		//alert('item tap')
         		//dumpProps(record);
-        		Ext.getCmp('CHATTER_POST').getTpl().overwrite(Ext.getDom('CHATTER_POST'),record.raw.body);
-        		Ext.getCmp('COMMENT_LIST').setData([{text:'aaa'},{text:'aaab'},{text:'aaac'}]);
+        		var chatterPost = {
+        			id:record.raw.id,
+        			parentPhotoSmallPhotoUrl:record.raw.actor.photo.smallPhotoUrl,
+        			actorName:record.raw.actor.name,
+        			bodyText:record.raw.body.text,
+        			createdDate:ItbAppUtil.formatTime(record.raw.createdDate),
+        			likesTotal:record.raw.likes.total,
+        			commentsTotal:record.raw.comments.total,
+        			accessToken:ItbAppUtil.accessToken
+        		};
+        		ItbAppUtil.currentFeedId = chatterPost.id;
+        		//dumpProps(chatterPost);
+        		Ext.getCmp('CHATTER_POST').getTpl().overwrite(Ext.getDom('CHATTER_POST'),chatterPost);
+        		var comments = record.raw.comments.comments;
+        		ItbApp.refreshCommentList(comments);
+        		/*
+        		Ext.getStore('CHATTER_COMMENT_STORE').removeAll();
+        		var comments = record.raw.comments.comments,cmt,_cmt,cmtData,cmtItem;
+        		for(cmt in comments){
+        			_cmt = comments[cmt],//console.log(comments[cmt]),
+        			cmtData = {
+        				'id':_cmt.id,
+				        'bodyText':_cmt.body.text,
+				        'cmtPhotoUrl':_cmt.user.photo.smallPhotoUrl,
+				        'createdDate':ItbAppUtil.formatTime(_cmt.createdDate),
+				        'userName':_cmt.user.name,
+				       // {name: 'likes', type: 'auto'},///
+				       'appName':(_cmt.clientInfo?_cmt.clientInfo.applicationName:'ItbDemo'),
+				       'accessToken':ItbAppUtil.accessToken
+        			},
+        			cmtItem = Ext.create('ItbApp.model.ChatterComments',cmtData);
+        			Ext.getStore('CHATTER_COMMENT_STORE').add(cmtItem);
+        		}
+        		Ext.getCmp('COMMENT_LIST').refresh();
+        		*/
+        		//console.log(Ext.getCmp('COMMENT_LIST').getStore().getCount());
+        		//Ext.getCmp('COMMENT_LIST').setData([{body:{text:'aaa'}},{body:{text:'aaab'}},{body:{text:'aaac'}}]);
+        		//Ext.getStore('CHATTER_COMMENT_STORE').removeAll();
+        		//dumpProps(record.raw.comments.comments);
+        		//Ext.getStore('CHATTER_COMMENT_STORE').setData(record.raw.comments.comments);
+        		//Ext.getStore('CHATTER_COMMENT_STORE').setData([{id:'aa',body:{text:'myText'},user:{photo:{smallPhotoUrl:'xxx'},name:'sss'},createdDate:'xxx',clientInfo:{applicationName:'aaa'}}]);
         		//dumpProps(record.raw.comments.comments);
         		//Ext.getCmp('COMMENT_LIST').refresh();
         		Ext.getCmp('CHATTER').setActiveItem(2);
@@ -102,23 +142,26 @@ ItbApp.shareComment=function(el,feedid){
 };
 ItbApp.onCommentSucess=function(){	
 	Ext.Msg.alert('Success','comment success...');
-	setTimeout(function(){ItbApp.store.chatterStore.load()},10);
+	//setTimeout(function(){ItbApp.store.chatterStore.load()},10);
+	forcetkClient.loadFeedComments(ItbAppUtil.currentFeedId,
+		function(response){
+			ItbApp.refreshCommentList(response.comments,true);
+		},	
+		ItbApp.onCommentFailed
+	);
+	//Ext.get('CHATTER_COMMENT_STORE').removeAll();
+	
+	Ext.getCmp('CHATTER').setActiveItem(2); 
+	Ext.Viewport.setMasked(false);
 	//without such setTimeout delay, the load result will not be most updated
 
 };
 ItbApp.onCommentFailed=function(error){
+	Ext.Viewport.setMasked(false);
 	Ext.Msg.alert('Error','comment error...')
 	dumpProps(error);// the error status show 0, not sure how to solve.
 };
-ItbApp.likeComment = function(feedid){
-	forcetkClient.ajax('/' + forcetkClient.apiVersion + '/chatter/feed-items/'+feedid+'/likes', 
-		function(response){
-			setTimeout(function(){ItbApp.store.chatterStore.load()},10);
-		}, 
-		ItbApp.onCommentFailed,
-		'POST',
-		null);
-}
+
 ItbApp.hideComment = function (elem){//alert('hide comt ')
 	$j(elem).hide().next().show().next().hide();		
 }
@@ -128,4 +171,30 @@ ItbApp.showComment = function (elem){//alert('show ')
 	//	alert($j(this).html());
 	//});
 }
-
+ItbApp.refreshCommentList = function (comments,refreshChatter){
+	Ext.getStore('CHATTER_COMMENT_STORE').removeAll();
+        		var cmt,_cmt,cmtData,cmtItem;
+        		for(cmt in comments){
+        			_cmt = comments[cmt],//console.log(comments[cmt]),
+        			cmtData = {
+        				'id':_cmt.id,
+				        'bodyText':_cmt.body.text,
+				        'cmtPhotoUrl':_cmt.user.photo.smallPhotoUrl,
+				        'createdDate':ItbAppUtil.formatTime(_cmt.createdDate),
+				        'userName':_cmt.user.name,
+				       // {name: 'likes', type: 'auto'},///
+				       'appName':(_cmt.clientInfo?_cmt.clientInfo.applicationName:'ItbDemo'),
+				       'accessToken':ItbAppUtil.accessToken
+        			},
+        			cmtItem = Ext.create('ItbApp.model.ChatterComments',cmtData);
+        			Ext.getStore('CHATTER_COMMENT_STORE').add(cmtItem);
+        		}
+        		if(comments.length > 0){//alert(Ext.get('COMMENT_ARROW').className)
+        			Ext.get('COMMENT_ARROW').className = 'commentArrowShow';
+        			Ext.get('COMMENT_ARROW').show();
+        		}
+        		if(refreshChatter){
+        			Ext.getStore("Chatter").load();
+        		}
+        		Ext.getCmp('COMMENT_LIST').refresh();
+}

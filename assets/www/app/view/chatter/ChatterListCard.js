@@ -66,6 +66,7 @@ Ext.define('ItbApp.view.chatter.ChatterListCard', {
 			    }
 			});
 			*/
+			
 		var chatterList = {
 				 xtype:'chatterlist',
 				 store: ItbApp.store.chatterStore

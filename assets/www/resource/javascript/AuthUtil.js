@@ -26,13 +26,82 @@ var ItbAppUtil = {
         Ext.Viewport.add(mainView); 
         */
        //alert(ItbAppUtil.accessToken);
-        Ext.getCmp('CHATTER_LIST').setItemTpl('<tpl for="."><span class="actorPhoto"><img src="{parentPhotoSmallPhotoUrl}?oauth_token='+ItbAppUtil.accessToken+'" alt=""/></span>'
-                +'<div class="chatterMain"><div><span class="actorInfo">{actorName}</span><span class="post_body">{bodyText}'
-    			+'</span></div><div class="chatterTime">{createdDate}</div>'
-    			+'<a onclick="ItbApp.showCommentPopUp(\'{id}\')" class="commentLink">Comment</a><a class="commentLink" href="#" onclick="ItbApp.likeComment(\'{id}\')">Like</a>'                                   
-                + '<div class="like">Likes: {likesTotal}</div>'
-                + '<div class="cmt_bar">{commentsTotal} Comments now.</div></div>'
-                + '</tpl>');
+		listTpl = new Ext.XTemplate(
+				'<tpl for=".">',
+					'<span class="actorPhoto">',
+						'<img src="{parentPhotoSmallPhotoUrl}?oauth_token=',
+						//ItbAppUtil.accessToken,
+						'{[ItbAppUtil.getToken()]}',
+						'" alt=""/>',
+					'</span>',
+					'<div class="chatterMain">',
+						'<div><span class="actorInfo">',
+							'<tpl if="parentName != actorName">',
+							'<img src="resource/Images/groups16.png" class="groupImage"/>',
+							'{parentName} - ',
+							'</tpl>',
+							'{actorName}</span>    <tpl if="parentName != actorName"><br></tpl><span class="chatterTime">{[this.processTime(values.createdDate)]}</span><br>',
+							'<span class="post_body">{[this.processText(values.bodyText,60,true)]}</span><br>',
+							//'<span class="cmtTotal">{commentsTotal} Comment{[values.commentsTotal<2?"":"s"]}</span>',
+							'<span class="like"><img src="resource/Images/like.png"/> {likesTotal}</span>',
+						'</div>',
+						//'<div class="cmt_bar"><br><span class="cmtTotal">{commentsTotal} Comment{[values.commentsTotal<2?"":"s"]}</span></div>',
+					'</div>',
+               '</tpl>',
+               {	processText:function(value, len, word){
+               			if (value && value.length > len) {
+				            if (word) {
+				                var vs = value.substr(0, len - 2),
+				                index = Math.max(vs.lastIndexOf(' '), vs.lastIndexOf('.'), vs.lastIndexOf('!'), vs.lastIndexOf('?'));
+				                if (index !== -1 && index >= (len - 15)) {
+				                    return vs.substr(0, index) + "...";
+				                }
+				            }
+				            return value.substr(0, len - 3) + "...";
+				        }
+				        return value;
+              		},
+					processTime:function(t,idx){
+						var _t=''+t;
+						var year=parseInt(_t.substring(0,4),10),
+							month=parseInt(_t.substring(5,7),10),
+							day=parseInt(_t.substring(8,10),10),
+							hour=parseInt(_t.substring(11,13),10),
+							minute=parseInt(_t.substring(14,16),10);
+						//alert(t+"=="+year+':'+month+":"+day+":"+hour+":"+minute)
+						var d = new Date();
+						var _year=d.getFullYear(),
+							_month=1+d.getMonth(),
+							_day=d.getDate(),
+							_hour=d.getHours(),
+							_minute=d.getMinutes();
+						var result;
+						if(year === _year){
+							if(month === _month){
+								if(day === _day){
+									if(hour === _hour){
+										if(minute === _minute){
+											result = 'just now';
+										}else{
+											result = (_minute - minute > 1 ?(_minute - minute)+'minutes' : '1 minute');
+										}
+									}else{
+										result = (_hour - hour > 1 ?(_hour - hour)+'hours' : '1 hour');
+									}
+								}else{
+									result = (_day - day > 1 ?(_day - day)+'days' : '1 day');
+								}
+							}else{
+								result = (_month - month > 1 ?(_month - month)+'months' : '1 month');
+							}
+						}else{
+							result = (_year - year > 1 ?(_year - year)+'years' : '1 year');
+						}						
+						return result;
+					}
+               }
+		);
+        Ext.getCmp('CHATTER_LIST').setItemTpl(listTpl);
         ItbApp.store.chatterStore.load({
               /*callback:function(records, operation, success){
               	alert('call back');
@@ -40,6 +109,7 @@ var ItbAppUtil = {
               },*/
               scope: this
         });
+        //Ext.getCmp('CHATTER_POST').setItemTpl();
         //forcetkClient.ajax('v23.0/chatter/feeds/news/me/feed-items',rok,rfail);
 	}
 	,
@@ -61,6 +131,23 @@ var ItbAppUtil = {
     getToken : function(){
 		return ItbAppUtil.accessToken;
 	},
+	formatTime:function(t,idx){
+						var _t=''+t;
+						var year=parseInt(_t.substring(0,4),10),
+							month=parseInt(_t.substring(5,7),10),
+							day=parseInt(_t.substring(8,10),10),
+							hour=parseInt(_t.substring(11,13),10),
+							minute=parseInt(_t.substring(14,16),10);
+							if(hour < 10) hour = '0'+hour;
+							if(minute < 10) minute = '0'+minute;						
+						var result;
+						var map_month = [
+							'Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'
+						];
+						month = map_month[month-1];
+						result = month + ' ' + day + ' ' + year + ' ' + hour + ':' + minute + (hour < 12 ? ' AM':' PM');
+						return result;
+				},
     testStore:[{
     	image:'http:\\mytest.jpg',
     	type:'TrackedChange',

@@ -377,4 +377,7 @@ if (forcetk.Client === undefined) {
     forcetk.Client.prototype.loadFeedItem = function(feedItemId,callback,error){
     	this.ajax('/' + this.apiVersion + '/chatter/feed-items/' + feedItemId,callback,error);
     }
+    forcetk.Client.prototype.loadFeedComments = function(feedItemId,callback,error){
+    	this.ajax('/' + this.apiVersion + '/chatter/feed-items/' + feedItemId+'/comments',callback,error);
+    }
 }

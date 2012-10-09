@@ -19,7 +19,6 @@ Ext.define("ItbApp.model.Chatter", {
         {name: 'parentType', mapping: 'parent.type'},
      	{name: 'attachment', mapping: 'attachment'},
      	{name: 'accessToken',type: 'auto'}
-     	
     ],
     }
 });

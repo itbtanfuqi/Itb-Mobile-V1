@@ -8,7 +8,7 @@ Ext.define("ItbApp.store.Chatter", {
         autoLoad: false,
         sorters: [{ property: 'dateCreated', direction: 'DESC'}],
 		listeners: {
-				beforeload:function(store,operation){ alert('begin load')
+				beforeload:function(store,operation){ 
 					if(!store.getProxy().config.extraParams||!store.getProxy().config.extraParams.userId)
 						store.setProxy(new ItbApp.proxy.ChatterProxy());
 					
@@ -26,12 +26,9 @@ Ext.define("ItbApp.store.Chatter", {
                         //dumpProps(store.getProxy());
                         //store.getProxy().setUrl(forcetkClient.instanceUrl + '/services/data' + '/' + forcetkClient.apiVersion + '/chatter/feeds/groups/' + 'me' + '/feed-items');
                      },
-                     metachange:function( store, data, eOpts ){
-                     	dumpProps(data);
-                     },
 					load:function(store, records, successful){
 						//Ext.getCmp('CHATTER_LIST').refresh();
-						alert('store count:'+store.getCount());
+						//alert('store count:'+store.getCount());
 						//dumpProps(records);
 					}
 				} 
