@@ -64,6 +64,9 @@
 		<!-- Login activity -->
 		<activity android:name="com.salesforce.androidsdk.ui.LoginActivity" />
 
+		<!-- twitter Login activity -->
+		<activity android:name="com.itb.newdemo.twitterLoginActivity" />
+		
 		<!-- Passcode activity -->
 		<activity android:name="com.salesforce.androidsdk.ui.PasscodeActivity" android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
 		

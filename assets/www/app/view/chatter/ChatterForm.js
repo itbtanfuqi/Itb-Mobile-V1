@@ -14,6 +14,14 @@ Ext.define("ItbApp.view.chatter.ChatterForm", {
 	            cls:'chatter_textarea'
 	        },
 	        {
+	        	xtype: 'togglefield',
+	        	id:'UPDATE_TWITTER',
+			    name: 'updateTwitter',
+			    label: 'Also twitter?',
+			    labelWidth: '60%',
+			    flex:1,
+	        },
+	        {
 	        	layout:'hbox',
 	        	flex:1,
 	        	items:[
@@ -40,9 +48,22 @@ Ext.define("ItbApp.view.chatter.ChatterForm", {
 			        			Body:Ext.getCmp('CHATTER_FORM_TEXTAREA').getValue(),
 			        			ParentId: ItbAppUtil.sfdcUserId
 			        		};
+			        		var synTwitter = Ext.getCmp('UPDATE_TWITTER').getValue(); alert(synTwitter);
 			        		//dumpProps(chatterFormData)
 			        		if(chatterFormData.Body != ''){			        			
 			        			forcetkClient.create('FeedItem', chatterFormData, ItbApp.onChatterSendMessageSuccess, ItbApp.onChatterSendMessageFailed) ;
+			        			if(synTwitter == 1){ // update twitter at the same time
+			        				if(ItbAppUtil.twitterOn){		
+				        				var twitterFormData={
+						        			//status:Ext.getCmp('TWITTER_FORM_TEXTAREA').getValue()
+						        			status:chatterFormData.Body
+						        		};alert('58@chatterform');
+						        		//dumpProps(chatterFormData)
+						        		ItbAppUtil.twitterUpdate(twitterFormData);
+					        		}else{
+					        			alert('twitter not log in')
+					        		}
+			        			}
 			        		}else{
 			        			Ext.Viewport.setMasked(false);
 			        			return false;

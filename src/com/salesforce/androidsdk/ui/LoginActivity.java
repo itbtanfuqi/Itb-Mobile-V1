@@ -109,7 +109,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 		webView.getSettings().setJavaScriptEnabled(true);
 		webView.setWebViewClient(new AuthWebViewClient());
 		webView.setWebChromeClient(new AuthWebChromeClient());
-
+		
 		// Restore webview's state if available.
 		// This ensures the user is not forced to type in credentials again
 		// once the auth process has been kicked off.
@@ -389,7 +389,8 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 	class AuthWebViewClient extends WebViewClient {
 		@Override
 		public boolean shouldOverrideUrlLoading(WebView view, String url) {
-			boolean isDone = url.startsWith(loginOptions.oauthCallbackUrl);
+			//Log.i("LoginActivity url", url);
+			boolean isDone = url.startsWith(loginOptions.oauthCallbackUrl);	
 			
 			if (isDone) {
 				Uri callbackUri = Uri.parse(url);
@@ -402,7 +403,7 @@ public class LoginActivity extends AccountAuthenticatorActivity {
 					onAuthFlowError(error, errorDesc);
 				}
 				// Or succeed?
-				else {
+				else {					
 					TokenEndpointResponse tr = new TokenEndpointResponse(params);
 					onAuthFlowComplete(tr);
 				}

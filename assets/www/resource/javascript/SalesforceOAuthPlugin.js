@@ -40,7 +40,12 @@ var SalesforceOAuthPlugin = {
         PhoneGap.exec(success, fail, "com.salesforce.oauth", "authenticate", [JSON.stringify(oauthProperties)]);
     },
 
-
+	/**
+	 * by Fuqi
+	 * */
+	twitterAuth : function(success,fail,url){
+		PhoneGap.exec(success, fail, "com.salesforce.oauth", "twitterLogin", [url]);
+	},
     /**
     * Logout the current authenticated user. This removes any current valid session token
     * as well as any OAuth refresh token.  The user is forced to login again.

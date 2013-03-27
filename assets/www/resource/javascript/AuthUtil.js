@@ -148,6 +148,184 @@ var ItbAppUtil = {
 						result = month + ' ' + day + ' ' + year + ' ' + hour + ':' + minute + (hour < 12 ? ' AM':' PM');
 						return result;
 				},
+	twitterOptions: {
+						consumerKey: '1YXY07G5nUV76NOTWl3Hw',
+						consumerSecret: 'DVTqVCgyAOx2UuXI6OFKB9FXMRLPoRzE0g8zVgqzaQo',
+						callbackUrl:"testsfdc:///itbdemo/TWITTERCALLBACK"
+						//callbackUrl: oauthRedirectURI
+					},
+	twitterOAuth : null,
+	twitterSuc : function(data){
+								//alert('ok');
+								//dumpProps(data);
+					if(data&&data.text&&data.text.length > 0){
+						var rq = data.text.split('&');
+						var oauthToken = rq[0].split('='),
+							oauthTokenSecret = rq[1].split('='),
+							oauthCallbackConfirmed = rq[2].split('=');
+						ItbApp.oauthToken = data.text;
+						var url_sec = 'https://api.twitter.com/oauth/authenticate?oauth_token='+oauthToken[1];								
+						//Ext.getCmp('TWITTER_CONTAINER').setHtml('<div>Click the twitter page link and grant access to this application.Then fill in the below PIN code which will be provided from the twitter grant access page.</div> <a href="'+ url_sec +'" target="_blank">Twitter Grant Access</a>');
+						Ext.getCmp('TWITTER_CONTAINER').add({
+							xtype:'button',
+							text:'twitterLogin',
+							handler:function(){ //alert('@AuthUtil 172 under construction');
+								//window.twitter.startTwitterLogin(url_sec);
+								//Ext.Viewport.setMasked({xtype: 'loadmask',indicator: true});
+								SalesforceOAuthPlugin.twitterAuth(function(data){
+										//alert('ok 175');
+										ItbAppUtil.twitterLoginSuc(data);
+									},
+									function(err){
+										alert('fail get data from call back');
+										dumpProps(err);
+									},
+									url_sec);
+							}
+						});
+					}else{
+							alert('Response empty data,please check');
+							dumpProps(data);
+					}
+				},
+	twitterFail : function(data){
+									alert("Throw rotten fruit, something failed");
+									dumpProps(data);
+								},
+	pinProcess : function(oauth_token,oauth_verifier){
+								//var pin = Ext.getCmp('PIN_CODE').getValue();
+								//alert(pin);
+								if(oauth_token){
+									//ItbAppUtil.twitterOAuth.get('https://twitter.com/oauth/access_token?oauth_verifier='+pin+'&'+ItbApp.oauthToken,
+									ItbAppUtil.twitterOAuth.get('https://twitter.com/oauth/access_token?oauth_verifier='+oauth_verifier+'&oauth_token='+oauth_token,
+										function(data) {					
+											var accessParams = {};
+											var qvars_tmp = data.text.split('&');
+											for (var i = 0; i < qvars_tmp.length; i++) {;
+												var y = qvars_tmp[i].split('=');
+												accessParams[y[0]] = decodeURIComponent(y[1]);
+											};
+											ItbAppUtil.twitterOAuth.setAccessToken([accessParams.oauth_token, accessParams.oauth_token_secret]);
+											Ext.getCmp('TWITTER_LOGOUT').setHidden(false);
+											Ext.getCmp('TWITTER_LOGIN').setHidden(true);
+											//alert('ov')
+											ItbAppUtil.twitterOn = true;
+											ItbAppUtil.getHomeTimeline();	
+											
+										},
+					
+										function(data) { Ext.Viewport.setMasked(false); alert('poop'); dumpProps(data); }
+									);				
+								}else{
+									alert('PIN can not be empty')
+								}
+							},
+	twitterLogout : function(){
+		ItbAppUtil.twitterOAuth.setAccessToken([null, null]);
+		ItbAppUtil.twitterOAuth = null;
+		Ext.getCmp('TWITTER_CONTAINER').setHtml('You are log out');
+		Ext.getCmp('TWITTER_LOGOUT').setHidden(true);
+		Ext.getCmp('TWITTER_LOGIN').setHidden(false);
+		ItbAppUtil.twitterOn = false;
+	},
+	getHomeTimeline : function(){
+		if(!ItbAppUtil.twitterOn){Ext.Msg.alert('Status','You have not logged in!');return;}
+		Ext.Viewport.setMasked({xtype: 'loadmask',indicator: true});
+		ItbAppUtil.twitterOAuth.get('https://api.twitter.com/1/statuses/home_timeline.json?include_entities=true',									
+			function(data) {				
+				var entries = JSON.parse(data.text);
+				var o,
+					twitterStore = Ext.getStore('TWITTER_STORE');										
+				for (var i in entries) { //alert('i='+i);if(i<2)dumpProps(entries[i])
+					o = Ext.create('ItbApp.model.Twitter',{
+						'id':entries[i].id,
+				        'created_at': entries[i].created_at,
+				        'text':entries[i].text,
+				        'userName':entries[i].user.name,
+				        'screenName':entries[i].user.screen_name,
+				        'userImageHttps':entries[i].user.profile_image_url_https,
+				        'userImage':entries[i].user.profile_image_url
+					});
+					twitterStore.add(o);
+				}
+				Ext.getCmp('TWITTER').setActiveItem(1);
+				Ext.Viewport.setMasked(false);
+			},
+			function(data) { 
+				Ext.Viewport.setMasked(false);
+				alert('lame'); 
+				dumpProps(data); 
+			}
+		);			
+	},
+	twitterLogin:function(){
+							//console.log('beging twitter login');
+							var requestParams; 
+        					var accessParams; 
+							ItbAppUtil.twitterOAuth = OAuth(ItbAppUtil.twitterOptions);
+							var url = "https://api.twitter.com/oauth/request_token";							//alert(url);
+							
+							var ops ={
+									method:'POST',
+								 	//url: 'http://www.example.com/person/edit/2',
+								 	url:"https://api.twitter.com/oauth/request_token",
+									success: ItbAppUtil.twitterSuc,
+									failure: ItbAppUtil.twitterFail,
+									Authorization: OAuth,									
+									headers:{									
+										oauth_nonce:new Date().getTime(), 
+										oauth_callback:"http%3A%2F%2Flocalhost%2Fsign-in-with-twitter%2F",
+										oauth_signature_method:"HMAC-SHA1", 
+										oauth_timestamp:new Date().getTime(), 
+										oauth_consumer_key: ItbAppUtil.twitterOptions.consumerKey, 
+										oauth_version:"1.0"
+									}
+								};
+								//dumpProps(ops)
+							ItbAppUtil.twitterOAuth.request(ops);
+						
+			        		
+			        	
+	},
+	twitterUpdate : function(statusData,type){//alert('will update');dumpProps(statusData);
+		if(type){ alert('a 291')
+			ItbAppUtil.twitterOAuth.post("https://api.twitter.com/1.1/statuses/update.json",statusData,function(){},function(){});
+		}else{alert('b 293')
+			ItbAppUtil.twitterOAuth.post("https://api.twitter.com/1.1/statuses/update.json",statusData,ItbAppUtil.twitterUpdateSuc,ItbAppUtil.twitterUpdateFail);
+		}
+	},
+	twitterUpdateSuc : function(data){
+		Ext.getCmp('TWITTER_FORM').reset();
+		Ext.Viewport.setMasked(false);
+		Ext.getCmp('TWITTER').setActiveItem(1); 
+		ItbAppUtil.getHomeTimeline();
+		//alert('update suc'),
+		//dumpProps(data);
+		
+	},
+	twitterUpdateFail : function(data){
+		Ext.Viewport.setMasked(false);
+		alert('update fail')
+		dumpProps(data);
+		Ext.getCmp('TWITTER_FORM').reset();
+	},
+	twitterOn : false,
+	twitterLoginSuc : function(str){//alert('309'+str);
+		Ext.Viewport.setMasked({xtype: 'loadmask',indicator: true});
+		if(str && str.length > 0){
+			var ary = str.split('?');
+			if(ary.length == 2){
+				ary = ary[1].split('&');
+				if(ary.length == 2){
+					var oauth_token = ary[0].split('='),	
+						oauth_verifier = ary[1].split('=');
+					ItbAppUtil.pinProcess(oauth_token[1],oauth_verifier[1]);
+				}
+			}
+		}else{
+			Ext.Viewport.setMasked(false);
+		}
+	},
     testStore:[{
     	image:'http:\\mytest.jpg',
     	type:'TrackedChange',

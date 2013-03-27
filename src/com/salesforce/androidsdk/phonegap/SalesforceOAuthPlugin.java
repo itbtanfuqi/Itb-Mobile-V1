@@ -36,12 +36,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.os.SystemClock;
 import android.util.Log;
 import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebView;
 
+import com.itb.newdemo.twitterLoginActivity;
 import com.phonegap.api.Plugin;
 import com.phonegap.api.PluginResult;
 import com.salesforce.androidsdk.app.ForceApp;
@@ -68,14 +71,15 @@ public class SalesforceOAuthPlugin extends Plugin {
 
 	// Min refresh interval (when auto refresh is on)
 	private static final int MIN_REFRESH_INTERVAL = 120*1000; // 2 minutes
-	
+	public String callback;
 	/**
 	 * Supported plugin actions that the client can take.
 	 */
-	enum Action {
+	enum Action {		
 		authenticate,
 		getAuthCredentials,
-		logoutCurrentUser
+		logoutCurrentUser,
+		twitterLogin
 	}
 	
 	/* static because it needs to survive plugin being torn down when a new URL is loaded */
@@ -126,7 +130,7 @@ public class SalesforceOAuthPlugin extends Plugin {
      * @return              A PluginResult object with a status and message.
      */
     public PluginResult execute(String actionStr, JSONArray args, String callbackId) {
-    	Log.i("SalesforceOAuthPlugin.execute", "actionStr: " + actionStr);
+    	this.callback = callbackId;
     	// Figure out action
     	Action action = null;
     	try {
@@ -135,6 +139,7 @@ public class SalesforceOAuthPlugin extends Plugin {
 				case authenticate:       	return authenticate(args, callbackId);  
 				case getAuthCredentials: 	return getAuthCredentials(callbackId);  
 				case logoutCurrentUser:		return logoutCurrentUser(); 
+				case twitterLogin:			return twitterLogin(args, callbackId);
 				default: return new PluginResult(PluginResult.Status.INVALID_ACTION, actionStr); // should never happen
 	    	}
     	}
@@ -145,7 +150,39 @@ public class SalesforceOAuthPlugin extends Plugin {
     		return new PluginResult(PluginResult.Status.JSON_EXCEPTION, e.getMessage());    		
     	}
     }
-
+    /**
+     * Navtive implementation for "twitterLogin" action
+     * @param args The arguments used for twitterLogin.
+	 * @param callbackId The callback ID used when calling back into Javascript.
+	 * @return NO_RESULT since authentication is asynchronous.
+	 * @throws JSONException 
+     */   
+    protected PluginResult twitterLogin(JSONArray args, final String callbackId) throws JSONException {
+    	
+    	//Log.i("SalesforceOAuthPlugin.twitterLogin", "twitter called~~~~~");
+    	//Log.i("SalesforceOAuthPlugin.twitterLogin", (String)args.get(0));		
+    	
+    	String s = (String)args.get(0);
+    	startTwitter(s);
+    	PluginResult noop = new PluginResult(PluginResult.Status.NO_RESULT);
+		noop.setKeepCallback(true);
+		return noop;
+    }
+    private void startTwitter(String s){
+    	Intent i = new Intent(this.ctx,twitterLoginActivity.class);
+    	i.putExtra("twitterUrl", s);
+    	try{
+    		this.ctx.startActivityForResult((Plugin)this,i,1111);//Log.i("DroidGapActivity @ plug in", s);
+    	}catch(ActivityNotFoundException e){
+    		Log.i("SalesforceOAuthPlugin.start twitter", "Activity not found exception");
+    	}
+    }
+    public void onActivityResult(int requestCode, int resultCode, Intent data){//Log.i("DroidGap Activity @ plugin", ""+resultCode);
+		if(requestCode == 1111 && resultCode == 2222){// make sure it is my defined result
+			String result = data.getStringExtra("twitterString"); Log.i("DroidGap Activity pass @ plugin", result);
+			this.success(result, this.callback);//maybe need a PluginResult?
+		}
+    }
 	/**
 	 * Native implementation for "authenticate" action
 	 * @param args The arguments used for authentication.
@@ -154,7 +191,7 @@ public class SalesforceOAuthPlugin extends Plugin {
 	 * @throws JSONException 
 	 */
 	protected PluginResult authenticate(JSONArray args, final String callbackId) throws JSONException {
-		Log.i("SalesforceOAuthPlugin.authenticate", "authenticate called");
+		Log.i("SalesforceOAuthPlugin.authenticate", "authenticate called~~~~~");
 		JSONObject oauthProperties = new JSONObject((String) args.get(0));
 		LoginOptions loginOptions = parseLoginOptions(oauthProperties);
 		clientManager = new ClientManager(ctx, ForceApp.APP.getAccountType(), loginOptions);

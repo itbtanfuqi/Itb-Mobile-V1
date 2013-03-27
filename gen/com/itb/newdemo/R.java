@@ -22,7 +22,7 @@ public final class R {
         public static final int clear_cookies_button=0x7f070007;
         public static final int layout_root=0x7f070000;
         public static final int linearLayout=0x7f07000c;
-        public static final int menu_clear_custom_url=0x7f07000f;
+        public static final int menu_clear_custom_url=0x7f070010;
         public static final int oauth_webview=0x7f070005;
         public static final int passcode_error=0x7f07000a;
         public static final int passcode_instructions=0x7f07000b;
@@ -33,6 +33,7 @@ public final class R {
         public static final int picker_custom_url=0x7f070002;
         public static final int server_list_group=0x7f07000d;
         public static final int show_custom_url_edit=0x7f07000e;
+        public static final int twitter_webview=0x7f07000f;
     }
     public static final class layout {
         public static final int custom_server_url=0x7f030000;
@@ -41,6 +42,7 @@ public final class R {
         public static final int main=0x7f030003;
         public static final int passcode=0x7f030004;
         public static final int server_picker=0x7f030005;
+        public static final int twitterlogin=0x7f030006;
     }
     public static final class menu {
         public static final int clear_custom_url=0x7f060000;

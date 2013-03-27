@@ -5370,7 +5370,7 @@ var noArgs = [],
      * Each config item will have its own setter and getter method automatically generated inside the class prototype
      * during class creation time, if the class does not have those methods explicitly defined.
      *
-     * As an example, let鈥檚 convert the name property of a Person class to be a config item, then add extra age and
+     * As an example, let閳ユ獨 convert the name property of a Person class to be a config item, then add extra age and
      * gender items.
      *
      *     Ext.define('My.sample.Person', {
@@ -5389,7 +5389,7 @@ var noArgs = [],
      *         // ...
      *     });
      *
-     * Within the class, this.name still has the default value of 鈥淢r. Unknown鈥� However, it鈥檚 now publicly accessible
+     * Within the class, this.name still has the default value of 閳ユ发r. Unknown閳ワ拷 However, it閳ユ獨 now publicly accessible
      * without sacrificing encapsulation, via setter and getter methods.
      *
      *     var jacky = new Person({
@@ -5415,13 +5415,13 @@ var noArgs = [],
      *
      * Beside storing the given values, thoughout the frameworks, setters generally have two key responsibilities:
      *
-     *  - Filtering / validation / transformation of the given value before it鈥檚 actually stored within the instance.
+     *  - Filtering / validation / transformation of the given value before it閳ユ獨 actually stored within the instance.
      *  - Notification (such as firing events) / post-processing after the value has been set, or changed from a
      *    previous value.
      *
      * By standardize this common pattern, the default generated setters provide two extra template methods that you
-     * can put your own custom logics into, i.e: a 鈥渁pplyFoo鈥�and 鈥渦pdateFoo鈥�method for a 鈥渇oo鈥�config item, which are
-     * executed before and after the value is actually set, respectively. Back to the example class, let鈥檚 validate that
+     * can put your own custom logics into, i.e: a 閳ユ竵pplyFoo閳ワ拷and 閳ユ甫pdateFoo閳ワ拷method for a 閳ユ竾oo閳ワ拷config item, which are
+     * executed before and after the value is actually set, respectively. Back to the example class, let閳ユ獨 validate that
      * age must be a valid positive number, and fire an 'agechange' if the value is modified.
      *
      *     Ext.define('My.sample.Person', {
@@ -5464,7 +5464,7 @@ var noArgs = [],
      * consistent throughout and only contain the minimal logic that you actually care about.
      *
      * When it comes to inheritance, the default config of the parent class is automatically, recursively merged with
-     * the child鈥檚 default config. The same applies for mixins.
+     * the child閳ユ獨 default config. The same applies for mixins.
      */
     ExtClass.registerPreprocessor('config', function(Class, data) {
         var config = data.config,
@@ -14432,7 +14432,7 @@ Ext.define('Ext.XTemplateParser', {
         for (index = 0; index < len; index = end) {
             topRe.lastIndex = index;
             m = topRe.exec(str);
-
+console.log(m)
             if (!m) {
                 me.doText(str.substring(index, len));
                 break;
@@ -14515,7 +14515,7 @@ Ext.define('Ext.XTemplateParser', {
                 }
                 /**/
             } else {
-                frame = stack.pop();
+                frame = stack.pop(); console.log(frame)
                 me.doEnd(frame.type, frame.actions);
                 if (frame.type == 'for') {
                     --me.level;
@@ -15052,7 +15052,7 @@ Ext.define('Ext.data.Error', {
  *                     if (weather) {
  *                         // Style the viewport html, and set the html of the max temperature
  *                         Ext.Viewport.setStyleHtmlContent(true);
- *                         Ext.Viewport.setHtml('The temperature in Palo Alto is <b>' + weather[0].tempMaxF + '掳 F<b/>');
+ *                         Ext.Viewport.setHtml('The temperature in Palo Alto is <b>' + weather[0].tempMaxF + '鎺�F<b/>');
  *                     }
  *                 }
  *             });
@@ -27945,7 +27945,7 @@ Ext.define('Ext.app.Controller', {
          * exist inside the *app/store* directory and define a class following the convention
          * AppName.store.StoreName. For example, in the code below, the *AppName.store.Users* class will be loaded.
          * Note that we are able to specify either the full class name (as with *AppName.store.Groups*) or just the
-         * final part of the class name and leave Application to automatically prepend *AppName.store.鈥� to each:
+         * final part of the class name and leave Application to automatically prepend *AppName.store.閳ワ拷 to each:
          *
          *     stores: [
          *         'Users',
@@ -28820,7 +28820,7 @@ Ext.define('Ext.app.Application', {
          * AppName.profile.ProfileName. For example, in the code below, the classes *AppName.profile.Phone*
          * and *AppName.profile.Tablet* will be loaded. Note that we are able to specify
          * either the full class name (as with *AppName.profile.Tablet*) or just the final part of the class name
-         * and leave Application to automatically prepend *AppName.profile.鈥� to each:
+         * and leave Application to automatically prepend *AppName.profile.閳ワ拷 to each:
          *
          *     profiles: [
          *         'Phone',
@@ -28837,7 +28837,7 @@ Ext.define('Ext.app.Application', {
          * AppName.controller.ControllerName. For example, in the code below, the classes *AppName.controller.Users*,
          * *AppName.controller.Groups* and *AppName.controller.Products* will be loaded. Note that we are able to specify
          * either the full class name (as with *AppName.controller.Products*) or just the final part of the class name
-         * and leave Application to automatically prepend *AppName.controller.鈥� to each:
+         * and leave Application to automatically prepend *AppName.controller.閳ワ拷 to each:
          *
          *     controllers: [
          *         'Users',
